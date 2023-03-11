@@ -1,4 +1,7 @@
+from flask import jsonify
+
 from . import app
+from .models import DBManager
 
 
 """
@@ -18,8 +21,14 @@ Versionar los endpoint (son un contrato)
 
 """
 
+RUTA = app.config.get('RUTA')
+
 @app.route('/')
 def inicio():
-    return (f'La ruta del archivo de datos es: {app.config["RUTA"]}<br>'
-            f'Secret Key: {app.config["SECRET_KEY"]}')
+    db = DBManager(RUTA)
+    sql = 'SELECT * FROM movimientos'
+    movimientos = db.consultaSQL(sql)
+    return movimientos
+    return jsonify(movimientos)
+
 
