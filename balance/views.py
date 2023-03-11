@@ -20,6 +20,9 @@ Versionar los endpoint (son un contrato)
 
 
 """
+#TODO: obtener un movimiento por id
+#TODO: actualizar movimiento por id
+#TODO: eliminar movimiento por id
 
 RUTA = app.config.get('RUTA')
 
