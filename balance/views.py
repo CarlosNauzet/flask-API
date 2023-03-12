@@ -20,7 +20,6 @@ Versionar los endpoint (son un contrato)
 
 
 """
-#TODO: obtener un movimiento por id
 #TODO: actualizar movimiento por id
 #TODO: eliminar movimiento por id
 
@@ -82,3 +81,53 @@ def get_Movimiento(id):
         status_code = 500
     return jsonify(resultado), status_code
 
+
+@app.route('/api/v1/movimientos/<int:id>', methods=['DELETE'])
+def eliminar_movimiento(id):
+    """
+    Instanciar el DB manager
+    Comprobar si existe el movimiento con ese ID
+    Si existe:
+        Preparo la consulta de eliminación
+    si se ha birrado:
+        resultado = ok
+    si no:
+        resultado = ko
+        mensaje = error al borrar
+    si no existe:
+        resultado = ko
+        mensaje = No existe
+    """
+    try:
+        db= DBManager(RUTA)
+
+        mov = db.obtenerMovimiento(id)
+        
+        if mov:
+            sql = 'DELETE FROM movimientos WHERE id=?'
+            esta_borrado = db.consultaConParametros(sql, (id,)) 
+            if esta_borrado:
+                resultado = {
+                'status' : 'success'
+            }
+                status_code = 200
+            else:
+                resultado = {
+                'status': 'error',
+                'message': 'No se ha eliminado el movimiento con )D={id}'
+            }
+                status_code = 500
+        else:
+            resultado = {
+                'status': 'error',
+                'message': f'No existe un movimiento con ID={id} para eliminar'
+            }
+            status_code = 404
+    except:
+        resultado = {
+            'status': 'error',
+            'message': 'Error desconocido en el servidor'
+        }
+        status_code = 500
+
+    return jsonify(resultado), status_code
