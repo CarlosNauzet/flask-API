@@ -1,8 +1,10 @@
+let spinner;
 const peticion = new XMLHttpRequest();
 console.log("Empiezo a ejecutar JS");
 
 function cargarMovimientos() {
   console.log("Has llamado a la función cargarMovimientos()");
+  spinner.classList.remove("off");
 
   peticion.open("GET", "http://127.0.0.1:5000/api/v1/movimientos", true);
   peticion.send();
@@ -20,6 +22,15 @@ function mostrarMovimientos() {
     let html = "";
     for (let i = 0; i < movimientos.length; i = i + 1) {
       const mov = movimientos[i];
+
+      if (mov.tipo === "G") {
+        mov.tipo = "Gasto";
+      } else if (mov.tipo === "I") {
+        mov.tipo = "Ingreso";
+      } else {
+        mov.tipo = "---";
+      }
+
       html =
         html +
         `
@@ -38,6 +49,7 @@ function mostrarMovimientos() {
     alert("Error al cargar los movimientos");
   }
 
+  spinner.classList.add("off");
   console.log("FIN de la función mostrarMovimientos");
 }
 
@@ -45,6 +57,7 @@ window.onload = function () {
   console.log("Función anónima al finalizar la carga de la ventana");
   const boton = document.querySelector("#boton-recarga");
   boton.addEventListener("click", cargarMovimientos);
+  spinner = document.querySelector("#spinner");
 
   cargarMovimientos();
   peticion.onload = mostrarMovimientos;
