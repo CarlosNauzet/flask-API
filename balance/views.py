@@ -31,19 +31,54 @@ def home():
     return render_template('index.html')
 
 @app.route('/api/v1/movimientos')
-def listat_movimientos():
+def lista_movimientos():
     try:
         db = DBManager(RUTA)
         sql = 'SELECT * FROM movimientos'
         movimientos = db.consultaSQL(sql)
-        resultado = {
+        if len(movimientos) > 0:
+            resultado = {
             "status": "success",
             "results": movimientos
         }
+            status_code = 200
+        else:
+            resultado = {
+                'staus': 'error',
+                'message': f'No hay movimientos en el sistema'
+            }
+            status_code = 404
     except Exception as error:
         resultado = {
             "status": "error",
             "message": str(error)
         }
-    return jsonify(resultado)
+        status_code = 500
+
+    return jsonify(resultado), status_code
+
+@app.route('/api/v1/movimientos/<int:id>')
+def get_Movimiento(id):
+    try:
+        db = DBManager(RUTA)
+        mov = db.obtenerMovimiento(id)
+        if mov:
+            resultado = {
+            'status': 'succes',
+            'results': mov
+            }
+            status_code = 200
+        else:
+            resultado = {
+                'status': 'error',
+                'message': f'No he encontrado un movimiento con el ID={id}'
+            }
+            status_code = 404
+    except Exception as error:
+        resultado = {
+        'status': 'error',
+        'message': str(error)
+    }
+        status_code = 500
+    return jsonify(resultado), status_code
 
